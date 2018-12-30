@@ -1,6 +1,6 @@
 package com.example.macintosh.sharedprefobject;
 
-public class Ingredients {
+public class Ingredients{
     private String name;
     private int  qty;
     private String unit;

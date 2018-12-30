@@ -11,13 +11,16 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
-    ArrayList<Ingredients> ingredientsArrayList;
+    List<Ingredients> ingredientsList;
     boolean isPinned = false;
     Ingredients onion;
 
@@ -32,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
 //        Ingredients honey = new Ingredients("honey",2,"TSP");
 //        Ingredients oliveOil = new Ingredients("olive oil",1,"TBSP");
 
+//        IngredientsList.addIngredients(onion);
+//        IngredientsList.addIngredients(honey);
+//        IngredientsList.addIngredients(oliveOil);
 
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -39,6 +45,11 @@ public class MainActivity extends AppCompatActivity {
 
         checkPreference();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         preferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -46,9 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 checkPreference();
             }
         });
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -78,11 +87,11 @@ public class MainActivity extends AppCompatActivity {
             isPinned = false;
             title = getString(R.string.pin);
             //unstore sharedpref
-            editor.remove(getString(R.string.onion_name_key));editor.commit();
-            editor.remove(getString(R.string.onion_unit_key));editor.commit();
-            editor.remove(getString(R.string.onion_qty_key));
-            editor.commit();
 
+            if(preferences.contains("json_key")){
+                editor.remove("json_key");
+                editor.commit();
+            }
 
         }else {
 
@@ -90,12 +99,7 @@ public class MainActivity extends AppCompatActivity {
             isPinned = true;
             title = getString(R.string.unpin);
 
-            //store sharedpref
-            editor.putString(getString(R.string.onion_name_key),onion.getName());
-            editor.commit();
-            editor.putString(getString(R.string.onion_unit_key),onion.getUnit());
-            editor.commit();
-            editor.putInt(getString(R.string.onion_qty_key),onion.getQty());
+            editor.putString("json_key",getJsonString(onion));
             editor.commit();
         }
 
@@ -103,10 +107,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPreference(){
-        String name = preferences.getString("ONION_NAME","default");
-        String unit = preferences.getString("ONION_UNIT","default unit");
-        int quant = preferences.getInt("ONION_QTY",0);
 
-        textView.setText(name+"\n"+unit + "\n" + quant);
+        if(preferences.contains("json_key")){
+            String ingredStringFromSharedPref = preferences.getString("json_key","");
+            Ingredients ingredientObjFromJsonString = getIngredientFromJson(ingredStringFromSharedPref);
+            textView.setText(ingredientObjFromJsonString.getName()+"\n"+ ingredientObjFromJsonString.getUnit() + "\n" + ingredientObjFromJsonString.getQty());
+        }else
+            textView.setText("no object");
+
+
     }
+
+    private String getJsonString(Ingredients ingredient){
+        Gson gson = new Gson();
+        return gson.toJson(ingredient);
+    }
+
+    private Ingredients getIngredientFromJson(String json){
+        Gson gson = new Gson();
+        Ingredients ingredient = gson.fromJson(json,Ingredients.class);
+        return ingredient;
+    }
+
+
 }
