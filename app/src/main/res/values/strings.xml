@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SharedPrefObject</string>
+    <string name="pin">Pin to Widget</string>
+    <string name="unpin">Unpin to Widget</string>
+    <string name="onion_name_key">ONION_NAME</string>
+    <string name="onion_unit_key">ONION_UNIT</string>
+    <string name="onion_qty_key">ONION_QTY</string>
+</resources>
