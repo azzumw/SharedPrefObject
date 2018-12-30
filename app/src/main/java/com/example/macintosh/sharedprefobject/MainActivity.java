@@ -18,7 +18,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     SharedPreferences preferences;
     List<Ingredients> ingredientsList;
-    boolean isPinned;
     Ingredients onion;
     String title;
     TextView textView;
@@ -35,11 +34,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
 
         if(savedInstanceState!=null){
-            isPinned = savedInstanceState.getBoolean("pinState");
+
             title = savedInstanceState.getString("widgetTitle");
         }else {
             title = getString(R.string.pin);
-            isPinned = false;
+
         }
 
         updateTextView(preferences.getString(getString(R.string.json_key),"no preference"));
@@ -49,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("pinState",isPinned);
+
         outState.putString("widgetTitle",title);
     }
 
@@ -94,27 +93,26 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     private String checkIfPinnned(){
+        /**
+         * This title is based on SharedPreferences State
+         * If there are any SharedPreference stored then the
+         * title should be 'Unpin From Widget', else it shoudl be
+         * 'Pin to Widget*/
         if(title.equals(getString(R.string.unpin))){
             Toast.makeText(this, getString(R.string.unpin), Toast.LENGTH_SHORT).show();
-//            isPinned = false;
             title = getString(R.string.pin);
-            //unstore sharedpref
 
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.remove(getString(R.string.json_key));
-                editor.apply();
-
-
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.remove(getString(R.string.json_key));
+            editor.apply();
 
         }else {
 
             Toast.makeText(this, getString(R.string.pin), Toast.LENGTH_SHORT).show();
-//            isPinned = true;
             title = getString(R.string.unpin);
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString(getString(R.string.json_key),getJsonString(onion));
-            editor.commit();
-
+            editor.apply();
         }
 
         return title;
@@ -122,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     private void updateTextView(String s){
 
-            textView.setText(s);
+        textView.setText(s);
     }
 
     private String getJsonString(Ingredients ingredient){
