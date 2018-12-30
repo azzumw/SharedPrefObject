@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     SharedPreferences preferences;
     List<Ingredients> ingredientsList;
-    boolean isPinned = false;
+    boolean isPinned;
     Ingredients onion;
     String title;
     TextView textView;
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             title = savedInstanceState.getString("widgetTitle");
         }else {
             title = getString(R.string.pin);
+            isPinned = false;
         }
 
         updateTextView(preferences.getString(getString(R.string.json_key),"no preference"));
@@ -60,7 +61,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.pin_to_widget_id);
+        if(preferences.contains(getString(R.string.json_key))){
+            title = getString(R.string.unpin);
 
+        }else{
+            title = getString(R.string.pin);
+        }
         item.setTitle(title);
 
         return super.onPrepareOptionsMenu(menu);
@@ -88,23 +94,22 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     private String checkIfPinnned(){
-        if(isPinned){
+        if(title.equals(getString(R.string.unpin))){
             Toast.makeText(this, getString(R.string.unpin), Toast.LENGTH_SHORT).show();
-            isPinned = false;
+//            isPinned = false;
             title = getString(R.string.pin);
             //unstore sharedpref
 
-            if(preferences.contains(getString(R.string.json_key))){
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.remove(getString(R.string.json_key));
                 editor.apply();
 
-            }
+
 
         }else {
 
             Toast.makeText(this, getString(R.string.pin), Toast.LENGTH_SHORT).show();
-            isPinned = true;
+//            isPinned = true;
             title = getString(R.string.unpin);
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString(getString(R.string.json_key),getJsonString(onion));
