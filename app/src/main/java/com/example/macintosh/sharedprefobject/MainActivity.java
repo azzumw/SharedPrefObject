@@ -17,11 +17,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     SharedPreferences preferences;
-    SharedPreferences.Editor editor;
     List<Ingredients> ingredientsList;
     boolean isPinned = false;
     Ingredients onion;
-
+    String title;
     TextView textView;
 
     @Override
@@ -32,13 +31,17 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         onion = new Ingredients("Onion",1,"TBSP");
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        editor = preferences.edit();
+        preferences.registerOnSharedPreferenceChangeListener(this);
+
 
         if(savedInstanceState!=null){
             isPinned = savedInstanceState.getBoolean("pinState");
+            title = savedInstanceState.getString("widgetTitle");
+        }else {
+            title = getString(R.string.pin);
         }
 
-        updateTextView(preferences.getString(getString(R.string.json_key),"defaultValue"));
+        updateTextView(preferences.getString(getString(R.string.json_key),"no preference"));
 
     }
 
@@ -46,13 +49,21 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("pinState",isPinned);
+        outState.putString("widgetTitle",title);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+    }
 
-        preferences.registerOnSharedPreferenceChangeListener(this);
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.pin_to_widget_id);
+
+        item.setTitle(title);
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -68,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
             case R.id.pin_to_widget_id:
                 //call method or store in sharedpreferences;return true;
-                String title = checkIfPinnned();
+                title = checkIfPinnned();
                 item.setTitle(title);
                 return true;
             default:
@@ -77,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     private String checkIfPinnned(){
-        String title;
         if(isPinned){
             Toast.makeText(this, getString(R.string.unpin), Toast.LENGTH_SHORT).show();
             isPinned = false;
@@ -85,8 +95,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             //unstore sharedpref
 
             if(preferences.contains(getString(R.string.json_key))){
+                SharedPreferences.Editor editor = preferences.edit();
                 editor.remove(getString(R.string.json_key));
-                editor.commit();
+                editor.apply();
 
             }
 
@@ -95,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             Toast.makeText(this, getString(R.string.pin), Toast.LENGTH_SHORT).show();
             isPinned = true;
             title = getString(R.string.unpin);
-
+            SharedPreferences.Editor editor = preferences.edit();
             editor.putString(getString(R.string.json_key),getJsonString(onion));
             editor.commit();
 
@@ -132,5 +143,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
 
         updateTextView(msg);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        preferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 }
