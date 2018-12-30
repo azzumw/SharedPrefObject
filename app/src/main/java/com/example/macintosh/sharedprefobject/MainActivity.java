@@ -1,6 +1,5 @@
 package com.example.macintosh.sharedprefobject;
 
-import android.content.ClipData;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,10 +12,9 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
@@ -32,31 +30,29 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         textView = findViewById(R.id.textview);
         onion = new Ingredients("Onion",1,"TBSP");
-//        Ingredients honey = new Ingredients("honey",2,"TSP");
-//        Ingredients oliveOil = new Ingredients("olive oil",1,"TBSP");
-
-//        IngredientsList.addIngredients(onion);
-//        IngredientsList.addIngredients(honey);
-//        IngredientsList.addIngredients(oliveOil);
-
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = preferences.edit();
 
-        checkPreference();
+        if(savedInstanceState!=null){
+            isPinned = savedInstanceState.getBoolean("pinState");
+        }
 
+        updateTextView(preferences.getString(getString(R.string.json_key),"defaultValue"));
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("pinState",isPinned);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        preferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-                checkPreference();
-            }
-        });
+        preferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -88,9 +84,10 @@ public class MainActivity extends AppCompatActivity {
             title = getString(R.string.pin);
             //unstore sharedpref
 
-            if(preferences.contains("json_key")){
-                editor.remove("json_key");
+            if(preferences.contains(getString(R.string.json_key))){
+                editor.remove(getString(R.string.json_key));
                 editor.commit();
+
             }
 
         }else {
@@ -99,23 +96,17 @@ public class MainActivity extends AppCompatActivity {
             isPinned = true;
             title = getString(R.string.unpin);
 
-            editor.putString("json_key",getJsonString(onion));
+            editor.putString(getString(R.string.json_key),getJsonString(onion));
             editor.commit();
+
         }
 
         return title;
     }
 
-    private void checkPreference(){
+    private void updateTextView(String s){
 
-        if(preferences.contains("json_key")){
-            String ingredStringFromSharedPref = preferences.getString("json_key","");
-            Ingredients ingredientObjFromJsonString = getIngredientFromJson(ingredStringFromSharedPref);
-            textView.setText(ingredientObjFromJsonString.getName()+"\n"+ ingredientObjFromJsonString.getUnit() + "\n" + ingredientObjFromJsonString.getQty());
-        }else
-            textView.setText("no object");
-
-
+            textView.setText(s);
     }
 
     private String getJsonString(Ingredients ingredient){
@@ -129,5 +120,17 @@ public class MainActivity extends AppCompatActivity {
         return ingredient;
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        String msg;
+        if(sharedPreferences.contains(key)){
+            String ingredStringFromSharedPref = preferences.getString(getString(R.string.json_key),"");
+            Ingredients ingredientObjFromJsonString = getIngredientFromJson(ingredStringFromSharedPref);
+            msg = ingredientObjFromJsonString.getName() + "\n" + ingredientObjFromJsonString.getUnit() + "\n" + ingredientObjFromJsonString.getQty();
+        }else {
+            msg = "No preference";
+        }
 
+        updateTextView(msg);
+    }
 }

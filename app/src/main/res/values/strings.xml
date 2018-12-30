@@ -5,4 +5,5 @@
     <string name="onion_name_key">ONION_NAME</string>
     <string name="onion_unit_key">ONION_UNIT</string>
     <string name="onion_qty_key">ONION_QTY</string>
+    <string name="json_key">json_key</string>
 </resources>
