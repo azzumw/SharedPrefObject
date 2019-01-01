@@ -5,12 +5,7 @@ import java.util.List;
 
 public final class IngredientsList {
 
-
     private static final ArrayList<Ingredients> ingredients = new ArrayList<Ingredients>();
-
-
-
-
 
     public static ArrayList<Ingredients> getIngredientsList()
     {

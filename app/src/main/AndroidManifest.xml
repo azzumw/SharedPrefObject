@@ -16,6 +16,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".ListViewWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <service android:name=".WidgetService">
+            <intent-filter>
+                <action android:name="com.example.macintosh.simplewidget.widgetservice.update_app_widget"/>
+                <action android:name="com.example.macintosh.simplewidget.widgetservice.update_app_widget_list"/>
+            </intent-filter>
+        </service>
+
+        <receiver android:name=".WidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_provider_info" />
+        </receiver>
     </application>
 
 </manifest>
