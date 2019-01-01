@@ -16,7 +16,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    SharedPreferences preferences;
+//    SharedPreferences preferences;
     List<Ingredients> ingredientsList;
     Ingredients onion;
     String title;
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         textView = findViewById(R.id.textview);
         onion = new Ingredients("Onion",1,"TBSP");
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
 
 
@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         MenuItem item = menu.findItem(R.id.pin_to_widget_id);
         if(preferences.contains(getString(R.string.json_key))){
             title = getString(R.string.unpin);
@@ -101,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         if(title.equals(getString(R.string.unpin))){
             Toast.makeText(this, getString(R.string.unpin), Toast.LENGTH_SHORT).show();
             title = getString(R.string.pin);
-
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = preferences.edit();
             editor.remove(getString(R.string.json_key));
             editor.apply();
@@ -110,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
             Toast.makeText(this, getString(R.string.pin), Toast.LENGTH_SHORT).show();
             title = getString(R.string.unpin);
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString(getString(R.string.json_key),getJsonString(onion));
             editor.apply();
@@ -138,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         String msg;
         if(sharedPreferences.contains(key)){
-            String ingredStringFromSharedPref = preferences.getString(getString(R.string.json_key),"");
+            String ingredStringFromSharedPref = sharedPreferences.getString(getString(R.string.json_key),"");
             Ingredients ingredientObjFromJsonString = getIngredientFromJson(ingredStringFromSharedPref);
             msg = ingredientObjFromJsonString.getName() + "\n" + ingredientObjFromJsonString.getUnit() + "\n" + ingredientObjFromJsonString.getQty();
         }else {
@@ -151,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 }
