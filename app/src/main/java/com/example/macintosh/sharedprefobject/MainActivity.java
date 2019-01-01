@@ -12,12 +12,12 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-//    SharedPreferences preferences;
-    List<Ingredients> ingredientsList;
+
     Ingredients onion;
     String title;
     TextView textView;
@@ -27,10 +27,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = findViewById(R.id.textview);
-        onion = new Ingredients("Onion",1,"TBSP");
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
+
 
 
         if(savedInstanceState!=null){
@@ -41,7 +41,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         }
 
-        updateTextView(preferences.getString(getString(R.string.json_key),"no preference"));
+        if(preferences.contains(getString(R.string.json_key))){
+            String ingredStringFromSharedPref = preferences.getString(getString(R.string.json_key),"");
+            updateTextView(getIngredientFromJson(ingredStringFromSharedPref));
+        }
+       else {
+            updateTextView("no preference");
+        }
 
     }
 
@@ -105,8 +111,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             title = getString(R.string.pin);
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = preferences.edit();
-            editor.remove(getString(R.string.json_key));
-            editor.apply();
+            editor.remove(getString(R.string.json_key)).apply();
+
 
         }else {
 
@@ -114,7 +120,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             title = getString(R.string.unpin);
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(getString(R.string.json_key),getJsonString(onion));
+            ArrayList<Ingredients> ingredients = IngredientsList.getIngredientsList();
+            String json = getJsonString(ingredients);
+            editor.putString(getString(R.string.json_key),json);
             editor.apply();
         }
 
@@ -126,29 +134,34 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         textView.setText(s);
     }
 
-    private String getJsonString(Ingredients ingredient){
+    private void updateTextView(Ingredients[] list){
+        textView.setText("");
+        for (int i =0; i<list.length;i++){
+            Ingredients ingredients = list[i];
+            textView.append(ingredients.getName()+"\n");
+        }
+    }
+
+    private String getJsonString(ArrayList<Ingredients> ingredient){ ;
         Gson gson = new Gson();
         return gson.toJson(ingredient);
     }
 
-    private Ingredients getIngredientFromJson(String json){
+    private Ingredients[] getIngredientFromJson(String json){
         Gson gson = new Gson();
-        Ingredients ingredient = gson.fromJson(json,Ingredients.class);
+        Ingredients ingredient[] = gson.fromJson(json,Ingredients[].class);
         return ingredient;
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        String msg;
+
         if(sharedPreferences.contains(key)){
             String ingredStringFromSharedPref = sharedPreferences.getString(getString(R.string.json_key),"");
-            Ingredients ingredientObjFromJsonString = getIngredientFromJson(ingredStringFromSharedPref);
-            msg = ingredientObjFromJsonString.getName() + "\n" + ingredientObjFromJsonString.getUnit() + "\n" + ingredientObjFromJsonString.getQty();
+            updateTextView(getIngredientFromJson(ingredStringFromSharedPref));
         }else {
-            msg = "No preference";
+            updateTextView("no preference");
         }
-
-        updateTextView(msg);
     }
 
     @Override

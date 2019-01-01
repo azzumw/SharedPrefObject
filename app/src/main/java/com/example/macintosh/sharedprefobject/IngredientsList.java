@@ -5,23 +5,22 @@ import java.util.List;
 
 public final class IngredientsList {
 
-    static List<Ingredients> ingredientsList = new ArrayList<>();
+
+    private static final ArrayList<Ingredients> ingredients = new ArrayList<Ingredients>();
 
 
-    public static void addIngredients(Ingredients ingredients){
 
-        ingredientsList.add(ingredients);
-    }
 
-    public static List<Ingredients> getIngredientsList()
+
+    public static ArrayList<Ingredients> getIngredientsList()
     {
-        if(ingredientsList!=null)
-            return ingredientsList;
-
-        return null;
+        if(ingredients.size()>0){
+            ingredients.clear();
+        }
+        ingredients.add(new Ingredients("onion",2,"TBSP"));
+        ingredients.add(new Ingredients("honey",1,"TSP"));
+        ingredients.add(new Ingredients("bee pollen",3,"TBSP"));
+        return ingredients;
     }
 
-    public static Ingredients getIngredientAtIndex(int pos){
-        return ingredientsList.get(pos);
-    }
 }
