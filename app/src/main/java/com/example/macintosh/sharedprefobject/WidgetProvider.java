@@ -23,6 +23,8 @@ public class WidgetProvider extends AppWidgetProvider {
         views.setRemoteAdapter(R.id.listView, intent);
         // Instruct the widget manager to update the widget
 
+        // TODO (2) I would like empty view to be displayed incase there is no item in the list. widget_provider.xml has Fallback Layout
+
 //        views.setEmptyView(R.id.listView,R.id.empty_view);
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
