@@ -5,24 +5,28 @@
     android:background="#fff"
     android:orientation="vertical">
 
-    <ListView
-        android:id="@+id/listView"
+    <!--<ListView-->
+        <!--android:id="@+id/listView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:divider="#f0f0f0"-->
+        <!--android:dividerHeight="1dp"/>-->
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="#f0f0f0"
-        android:dividerHeight="1dp"/>
+        android:id="@+id/maintv"
+        android:text="Main text">
 
+    </TextView>
 
 
     <!--<RelativeLayout-->
 
         <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
-        <!--<TextView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content" -->
-            <!--android:id="@+id/empty_tv"-->
-            <!--android:text="Nothing to show"/>-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:id="@+id/empty_view">-->
+        <!---->
     <!--</RelativeLayout>-->
 
 </FrameLayout>

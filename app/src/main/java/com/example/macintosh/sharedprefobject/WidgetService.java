@@ -28,7 +28,6 @@ public class WidgetService extends IntentService{
 
     private void handleActionUpdateListView() {
 
-
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
 

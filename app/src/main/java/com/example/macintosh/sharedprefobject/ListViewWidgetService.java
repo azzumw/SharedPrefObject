@@ -23,13 +23,6 @@ public class ListViewWidgetService extends RemoteViewsService {
 //        Log.e("TAG",list.get(1).getName()+"");
         return new AppWidgetListView(getApplicationContext());
     }
-
-    private List<Ingredients> getIngredientFromJson(String json){
-        Gson gson = new Gson();
-        Ingredients[] ingredient = gson.fromJson(json,Ingredients[].class);
-        return Arrays.asList(ingredient);
-
-    }
 }
 
 class AppWidgetListView implements RemoteViewsService.RemoteViewsFactory{
@@ -44,15 +37,18 @@ class AppWidgetListView implements RemoteViewsService.RemoteViewsFactory{
 
     @Override
     public void onCreate() {
-
     }
 
     @Override
     public void onDataSetChanged() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String json = preferences.getString(context.getString(R.string.json_key),"no preference");
+//        ingredientsArrayList = getIngredientFromJson(json);
 
-        ingredientsArrayList = getIngredientFromJson(json);
+        if(preferences.contains(context.getString(R.string.json_key))){
+            ingredientsArrayList = getIngredientFromJson(json);
+
+        }
     }
 
     @Override
@@ -67,18 +63,23 @@ class AppWidgetListView implements RemoteViewsService.RemoteViewsFactory{
 
     @Override
     public RemoteViews getViewAt(int position) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.list_item_widget);
+
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_provider);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String json = preferences.getString(context.getString(R.string.json_key),"no preference");
+        String name="";
+        if(preferences.contains(context.getString(R.string.json_key))){
+            ingredientsArrayList = getIngredientFromJson(json);
+            name = ingredientsArrayList.get(position).getName();
+        }
 
-        ingredientsArrayList = getIngredientFromJson(json);
-        views.setTextViewText(R.id.titleTextView, ingredientsArrayList.get(position).getName());
+        views.setTextViewText(R.id.maintv, name);
 
 
-        Intent fillInIntent = new Intent();
-        fillInIntent.putExtra("ItemTitle",ingredientsArrayList.get(position).getName());
-        views.setOnClickFillInIntent(R.id.parentView, fillInIntent);
+//        Intent fillInIntent = new Intent();
+//        fillInIntent.putExtra("ItemTitle",ingredientsArrayList.get(position).getName());
+//        views.setOnClickFillInIntent(R.id.parentView, fillInIntent);
         return views;
     }
 
@@ -106,7 +107,6 @@ class AppWidgetListView implements RemoteViewsService.RemoteViewsFactory{
         Gson gson = new Gson();
         Ingredients[] ingredient = gson.fromJson(json,Ingredients[].class);
         return Arrays.asList(ingredient);
-
     }
 }
 

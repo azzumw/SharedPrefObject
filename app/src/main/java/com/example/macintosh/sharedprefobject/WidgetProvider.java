@@ -17,7 +17,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
 
         // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_provider);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.list_view);
 
         Intent intent = new Intent(context, ListViewWidgetService.class);
         views.setRemoteAdapter(R.id.listView, intent);
@@ -25,7 +25,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
         // TODO (2) I would like empty view to be displayed incase there is no item in the list. widget_provider.xml has Fallback Layout
 
-//        views.setEmptyView(R.id.listView,R.id.empty_view);
+        views.setEmptyView(R.id.listView,R.id.empty_view);
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
