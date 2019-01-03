@@ -1,5 +1,6 @@
 package com.example.macintosh.sharedprefobject;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
@@ -23,7 +24,15 @@ public class WidgetProvider extends AppWidgetProvider {
         views.setRemoteAdapter(R.id.listView, intent);
         // Instruct the widget manager to update the widget
 
-        // TODO (2) I would like empty view to be displayed incase there is no item in the list. widget_provider.xml has Fallback Layout
+        Intent intentUpdate = new Intent(context, WidgetProvider.class);
+        intentUpdate.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] idArray = new int[]{appWidgetId};
+        intentUpdate.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, idArray);
+        PendingIntent pendingUpdate = PendingIntent.getBroadcast(
+                context, appWidgetId, intentUpdate,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+//        views.setOnClickPendingIntent(R.id.updatebtn, pendingUpdate);
+
 
         views.setEmptyView(R.id.listView,R.id.empty_view);
         appWidgetManager.updateAppWidget(appWidgetId, views);

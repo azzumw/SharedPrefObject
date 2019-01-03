@@ -20,7 +20,6 @@ public class ListViewWidgetService extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
 
-//        Log.e("TAG",list.get(1).getName()+"");
         return new AppWidgetListView(getApplicationContext());
     }
 }
@@ -31,7 +30,7 @@ class AppWidgetListView implements RemoteViewsService.RemoteViewsFactory{
     private Context context;
 
     public AppWidgetListView( Context context) {
-        ingredientsArrayList = new ArrayList<>();
+
         this.context = context;
     }
 
@@ -43,11 +42,11 @@ class AppWidgetListView implements RemoteViewsService.RemoteViewsFactory{
     public void onDataSetChanged() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String json = preferences.getString(context.getString(R.string.json_key),"no preference");
-//        ingredientsArrayList = getIngredientFromJson(json);
 
         if(preferences.contains(context.getString(R.string.json_key))){
             ingredientsArrayList = getIngredientFromJson(json);
-
+        }else {
+            ingredientsArrayList = new ArrayList<>();
         }
     }
 
@@ -66,13 +65,9 @@ class AppWidgetListView implements RemoteViewsService.RemoteViewsFactory{
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_provider);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String json = preferences.getString(context.getString(R.string.json_key),"no preference");
-        String name="";
-        if(preferences.contains(context.getString(R.string.json_key))){
-            ingredientsArrayList = getIngredientFromJson(json);
-            name = ingredientsArrayList.get(position).getName();
-        }
+
+        String name = ingredientsArrayList.get(position).getName();
+
 
         views.setTextViewText(R.id.maintv, name);
 
