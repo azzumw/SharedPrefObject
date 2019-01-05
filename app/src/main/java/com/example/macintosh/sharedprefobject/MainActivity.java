@@ -1,5 +1,7 @@
 package com.example.macintosh.sharedprefobject;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -160,6 +162,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }else {
             updateTextView("no preference");
         }
+
+        WidgetService.startActionUpdateAppWidgets(this);
+//        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+//        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
+
+//        WidgetProvider.updateAllAppWidget(this,appWidgetManager, appWidgetIds);
     }
 
     @Override
